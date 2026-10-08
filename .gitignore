@@ -40,3 +40,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/lib/generated/prisma
+
+# prisma-installed agent skill scaffolding (not part of this project)
+/.agents
+/.claude
+/.windsurf
+skills-lock.json

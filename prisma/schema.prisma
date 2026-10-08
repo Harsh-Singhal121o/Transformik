@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ToolSummary {
+  id                  String       @id @default(uuid()) @db.Uuid
+  toolName            String       @map("tool_name")
+  slug                String       @unique
+  url                 String?
+  logo                String?
+  oneLineDescription  String?      @map("one_line_description")
+  pricingModel        String?      @map("pricing_model")
+  category            Json?
+  createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  details             ToolDetails?
+
+  @@map("tools_summary")
+}
+
+model ToolDetails {
+  id          String      @id @db.Uuid
+  description String?
+  howToUse    String?     @map("how_to_use")
+  useCases    String?     @map("use_cases")
+  pros        String?
+  cons        String?
+  pricing     String?
+  faqs        Json?
+  screenshots Json?
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  summary     ToolSummary @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  @@map("tools_details")
+}
+
+model BlogSummary {
+  id            String       @id @default(uuid()) @db.Uuid
+  title         String
+  slug          String       @unique
+  excerpt       String?
+  featuredImage String?      @map("featured_image")
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  details       BlogDetails?
+
+  @@map("blogs_summary")
+}
+
+model BlogDetails {
+  id        String      @id @db.Uuid
+  content   String?
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  summary   BlogSummary @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  @@map("blogs_details")
+}
+
+model CategoryDetails {
+  id              Int      @id @default(autoincrement())
+  slug            String   @unique
+  name            String
+  metaTitle       String?  @map("meta_title")
+  metaDescription String?  @map("meta_description")
+  faqs            Json?
+  description     String?
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("categories_details")
+}
