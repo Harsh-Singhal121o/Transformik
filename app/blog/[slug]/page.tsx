@@ -19,12 +19,13 @@ interface BlogDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
-// ⚡ Generate static paths for blogs at build time
+// ⚡ Generate static paths for the latest 20 blogs only at build time
+// Older blogs will be generated on-demand (dynamicParams = true)
 export async function generateStaticParams() {
   try {
-    console.log("Generating static params for blog posts...");
+    console.log("Generating static params for latest 20 blog posts...");
 
-    const blogs = await SupabaseCache.getAllBlogs();
+    const blogs = await SupabaseCache.getLatestBlogs(20);
 
     const validBlogs = (blogs || []).filter(
       (blog: { slug?: string }) => blog.slug && blog.slug.trim()

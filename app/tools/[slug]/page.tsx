@@ -37,13 +37,13 @@ interface ToolDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
-// ⚡ Generate static paths for top 500 tools only at build time
+// ⚡ Generate static paths for top 100 tools only at build time
 // Other tools will be generated on-demand (dynamicParams = true)
 export async function generateStaticParams() {
   try {
-    console.log("Generating static params for top 500 tools...");
+    console.log("Generating static params for top 100 tools...");
 
-    const tools = await SupabaseCache.getLatestTools(500);
+    const tools = await SupabaseCache.getLatestTools(100);
 
     const validTools = (tools || []).filter(
       (tool: { slug?: string }) => tool.slug && tool.slug.trim()

@@ -48,3 +48,7 @@ next-env.d.ts
 /.claude
 /.windsurf
 skills-lock.json
+
+# one-off db seed scripts (reference backup CSVs outside the repo)
+/scripts/seed.ts
+/scripts/seed-categories.ts

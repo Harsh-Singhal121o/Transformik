@@ -5,6 +5,9 @@ import type { Metadata } from "next";
 
 export const revalidate = 43200; // Cache for 12 hours
 
+// Enable on-demand generation for categories not pre-generated at build time
+export const dynamicParams = true;
+
 const slugToTitle = (slug: string) =>
   slug
     .split("-")
@@ -31,10 +34,11 @@ async function getRandomCategories(
   return filtered.slice(0, limit);
 }
 
-// Generate static paths at build time
+// Generate static paths for the top 50 categories (by tool count) only at build time
+// Other categories will be generated on-demand (dynamicParams = true)
 export async function generateStaticParams() {
-  const slugs = await SupabaseCache.getAllCategorySlugs();
-  return slugs.map((slug) => ({ slug }));
+  const topCategories = await SupabaseCache.getAllCategoryCounts();
+  return topCategories.slice(0, 50).map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({

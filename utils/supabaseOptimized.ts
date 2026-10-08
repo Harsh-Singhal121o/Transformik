@@ -425,7 +425,7 @@ export class SupabaseCache {
       }
 
       if (category && category !== "all") {
-        query = query.contains("category", [category]);
+        query = query.contains("category", JSON.stringify([category]));
       }
 
       if (priceFilter && priceFilter !== "all") {
@@ -501,7 +501,7 @@ export class SupabaseCache {
       const { data, error, count } = await supabaseServer
         .from("tools_summary")
         .select("*", { count: "exact" })
-        .contains("category", [categoryName])
+        .contains("category", JSON.stringify([categoryName]))
         .order("tool_name", { ascending: true })
         .range(from, from + pageSize - 1);
 
@@ -661,7 +661,7 @@ export class SupabaseCache {
       }
 
       if (category && category !== "all") {
-        query = query.contains("category", [category]);
+        query = query.contains("category", JSON.stringify([category]));
       }
 
       if (sortMode === "alpha-desc") {
@@ -996,7 +996,7 @@ export class SupabaseCache {
           .neq("id", currentToolId);
 
         if (categories && categories.length > 0) {
-          query = query.contains("category", [categories[0]]);
+          query = query.contains("category", JSON.stringify([categories[0]]));
         }
 
         const { data } = await query.order("tool_name", { ascending: true }).limit(limit);
