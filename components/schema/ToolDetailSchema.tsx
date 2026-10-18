@@ -16,8 +16,6 @@ interface ToolDetailSchemaProps {
     how_to_use?: string;
     use_cases?: string;
     pros?: string;
-    cons?: string;
-    pricing?: string;
     screenshots?: string[];
     faqs?: { question: string; answer: string }[];
   };
@@ -25,23 +23,6 @@ interface ToolDetailSchemaProps {
 
 export function ToolDetailSchema({ tool, toolDetails }: ToolDetailSchemaProps) {
   const baseUrl = "https://www.transformik.com";
-
-  // Helper function to get price from pricing model
-  const getPriceFromModel = (pricingModel: string) => {
-    switch (pricingModel?.toLowerCase()) {
-      case "free":
-        return "0";
-      case "freemium":
-        return "0";
-      case "free trial":
-        return "0";
-      case "premium":
-      case "paid":
-        return "29.99";
-      default:
-        return "0";
-    }
-  };
 
   // Main SoftwareApplication Schema
   const softwareSchema = {
@@ -70,18 +51,6 @@ export function ToolDetailSchema({ tool, toolDetails }: ToolDetailSchemaProps) {
       "@type": "Organization",
       name: "Transformik AI",
       url: "https://www.transformik.com",
-    },
-    offers: {
-      "@type": "Offer",
-      price: getPriceFromModel(tool.pricing_model),
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-      priceValidUntil: "2025-12-31",
-      category: tool.pricing_model,
-      seller: {
-        "@type": "Organization",
-        name: tool.tool_name,
-      },
     },
     ...(tool.logo && {
       image: {

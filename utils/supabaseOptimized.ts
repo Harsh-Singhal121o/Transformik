@@ -384,8 +384,8 @@ export class SupabaseCache {
       if (isNeonProvider()) {
         const sql = getNeonSql();
         const searchPattern = search ? `%${search}%` : null;
-        const categoryPattern =
-          category && category !== "all" ? `%${category}%` : null;
+        const categoryJson =
+          category && category !== "all" ? JSON.stringify([category]) : null;
         const targetPrice =
           priceFilter && priceFilter !== "all" ? priceFilter : null;
 
@@ -393,7 +393,7 @@ export class SupabaseCache {
           SELECT *, COUNT(*) OVER() as total_count
           FROM tools_summary
           WHERE (${searchPattern}::text IS NULL OR tool_name ILIKE ${searchPattern})
-            AND (${categoryPattern}::text IS NULL OR category::text ILIKE ${categoryPattern})
+            AND (${categoryJson}::text IS NULL OR category @> ${categoryJson}::jsonb)
             AND (${targetPrice}::text IS NULL OR pricing_model = ${targetPrice})
           ORDER BY tool_name ASC
           LIMIT ${pageSize} OFFSET ${from}
@@ -476,12 +476,12 @@ export class SupabaseCache {
 
       if (isNeonProvider()) {
         const sql = getNeonSql();
-        const categoryPattern = `%${categoryName}%`;
+        const categoryJson = JSON.stringify([categoryName]);
 
         const rows = (await sql`
           SELECT *, COUNT(*) OVER() as total_count
           FROM tools_summary
-          WHERE category::text ILIKE ${categoryPattern}
+          WHERE category @> ${categoryJson}::jsonb
           ORDER BY tool_name ASC
           LIMIT ${pageSize} OFFSET ${from}
         `) as any[];
@@ -610,8 +610,8 @@ export class SupabaseCache {
       if (isNeonProvider()) {
         const sql = getNeonSql();
         const searchPattern = search ? `%${search}%` : null;
-        const categoryPattern =
-          category && category !== "all" ? `%${category}%` : null;
+        const categoryJson =
+          category && category !== "all" ? JSON.stringify([category]) : null;
 
         const rows = (sortMode === "alpha-desc"
           ? await sql`
@@ -619,7 +619,7 @@ export class SupabaseCache {
               FROM tools_summary
               WHERE pricing_model = 'Free'
                 AND (${searchPattern}::text IS NULL OR tool_name ILIKE ${searchPattern})
-                AND (${categoryPattern}::text IS NULL OR category::text ILIKE ${categoryPattern})
+                AND (${categoryJson}::text IS NULL OR category @> ${categoryJson}::jsonb)
               ORDER BY tool_name DESC
               LIMIT ${pageSize} OFFSET ${from}
             `
@@ -628,7 +628,7 @@ export class SupabaseCache {
               FROM tools_summary
               WHERE pricing_model = 'Free'
                 AND (${searchPattern}::text IS NULL OR tool_name ILIKE ${searchPattern})
-                AND (${categoryPattern}::text IS NULL OR category::text ILIKE ${categoryPattern})
+                AND (${categoryJson}::text IS NULL OR category @> ${categoryJson}::jsonb)
               ORDER BY tool_name ASC
               LIMIT ${pageSize} OFFSET ${from}
             `) as any[];
@@ -979,13 +979,13 @@ export class SupabaseCache {
       let rawTools: any[] = [];
       if (isNeonProvider()) {
         const sql = getNeonSql();
-        const primaryCategory = categories && categories.length > 0 ? `%${categories[0]}%` : null;
+        const primaryCategoryJson = categories && categories.length > 0 ? JSON.stringify([categories[0]]) : null;
 
         rawTools = (await sql`
           SELECT id, tool_name, slug, one_line_description, logo, category, pricing_model, url
           FROM tools_summary
           WHERE id::text != ${String(currentToolId)}
-            AND (${primaryCategory}::text IS NULL OR category::text ILIKE ${primaryCategory})
+            AND (${primaryCategoryJson}::text IS NULL OR category @> ${primaryCategoryJson}::jsonb)
           ORDER BY tool_name ASC
           LIMIT ${limit}
         `) as any[];

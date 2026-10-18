@@ -34,23 +34,6 @@ export function ToolsSchema({
 }: ToolsSchemaProps) {
   const baseUrl = "https://www.transformik.com";
 
-  // Helper function to get price from pricing model
-  const getPriceFromModel = (pricingModel: string): string => {
-    switch (pricingModel?.toLowerCase()) {
-      case "free":
-        return "0";
-      case "freemium":
-        return "0";
-      case "free trial":
-        return "0";
-      case "premium":
-      case "paid":
-        return "29.99";
-      default:
-        return "0";
-    }
-  };
-
   // ItemList Schema for the tools collection
   const itemListSchema = {
     "@context": "https://schema.org",
@@ -99,14 +82,6 @@ export function ToolsSchema({
             "@type": "Organization",
             name: "Transformik AI",
             url: "https://www.transformik.com",
-          },
-          offers: {
-            "@type": "Offer",
-            price: getPriceFromModel(tool.pricing_model),
-            priceCurrency: "USD",
-            availability: "https://schema.org/InStock",
-            priceValidUntil: "2026-01-01", // Replace with a static date
-            category: tool.pricing_model,
           },
           ...(logoUrl && {
             image: {

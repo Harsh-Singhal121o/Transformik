@@ -19,7 +19,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   CheckCircle,
-  XCircle,
   Lightbulb,
   BookOpen,
   HelpCircle,
@@ -156,8 +155,6 @@ export default async function ToolDetailPage({ params }: ToolDetailPageProps) {
                 how_to_use: toolDetails.how_to_use,
                 use_cases: toolDetails.use_cases,
                 pros: toolDetails.pros,
-                cons: toolDetails.cons,
-                pricing: toolDetails.pricing,
                 screenshots: screenshots,
                 faqs: faqs,
               }
@@ -186,9 +183,6 @@ export default async function ToolDetailPage({ params }: ToolDetailPageProps) {
               </h1> */}
                 <p className="text-gray-500">
                   {toolSummary.one_line_description}
-                </p>
-                <p className="font-semibold text-gray-700">
-                  Price: {toolSummary.pricing_model}
                 </p>
 
                 {/* Categories as Badges */}
@@ -349,128 +343,30 @@ export default async function ToolDetailPage({ params }: ToolDetailPageProps) {
               </Card>
             )}
 
-            {/* Pros & Cons */}
-            {(toolDetails?.pros || toolDetails?.cons) && (
+            {/* Pros */}
+            {toolDetails?.pros && (
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                    Pros & Cons
+                  <CardTitle className="flex items-center gap-2 text-lg font-semibold text-green-600">
+                    <CheckCircle className="w-5 h-5" /> Pros
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                  {/* Pros */}
-                  {toolDetails?.pros && (
-                    <div>
-                      <h3 className="flex items-center gap-2 font-semibold text-green-600">
-                        <CheckCircle className="w-5 h-5" /> Pros
-                      </h3>
-                      <ul className="list-disc ml-6 mt-2 text-gray-700 space-y-1">
-                        {ensureString(toolDetails.pros)!
-                          .split("\n")
-                          .filter((p: string) => p.trim())
-                          .map((p: string, idx: number) => {
-                            const cleanPros = p.replace(
-                              /^\s*[\d\.\•\-]+\s*/,
-                              "",
-                            ); // remove leading bullets or numbers
-                            return <li key={idx}>{cleanPros}</li>;
-                          })}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Cons */}
-                  {toolDetails?.cons && (
-                    <div>
-                      <h3 className="flex items-center gap-2 font-semibold text-red-600">
-                        <XCircle className="w-5 h-5" /> Cons
-                      </h3>
-                      <ul className="list-disc ml-6 mt-2 text-gray-700 space-y-1">
-                        {ensureString(toolDetails.cons)!
-                          .split("\n")
-                          .filter((c: string) => c.trim())
-                          .map((c: string, idx: number) => {
-                            const cleanCons = c.replace(
-                              /^\s*[\d\.\•\-]+\s*/,
-                              "",
-                            ); // remove leading bullets or numbers
-                            return <li key={idx}>{cleanCons}</li>;
-                          })}
-                      </ul>
-                    </div>
-                  )}
+                <CardContent className="pt-4">
+                  <ul className="list-disc ml-6 text-gray-700 space-y-1">
+                    {ensureString(toolDetails.pros)!
+                      .split("\n")
+                      .filter((p: string) => p.trim())
+                      .map((p: string, idx: number) => {
+                        const cleanPros = p.replace(
+                          /^\s*[\d\.\•\-]+\s*/,
+                          "",
+                        ); // remove leading bullets or numbers
+                        return <li key={idx}>{cleanPros}</li>;
+                      })}
+                  </ul>
                 </CardContent>
               </Card>
             )}
-
-            {/* Pricing */}
-            {toolDetails?.pricing &&
-              String(toolDetails.pricing).trim().toLowerCase() !== "nan" &&
-              String(toolDetails.pricing).trim() !== "" && (
-                <Card className="mt-6">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      Pricing
-                    </CardTitle>
-                  </CardHeader>
-
-                  <CardContent className="pt-4 text-gray-700 leading-relaxed">
-                    {/* Check if pricing value is a URL */}
-                    {/^https?:\/\/[^\s]+$/i.test(toolDetails.pricing.trim()) ? (
-                      // 🔗 Case 1: Pricing is a URL
-                      <p className="text-gray-800">
-                        To check the pricing of{" "}
-                        <span className="font-semibold">
-                          {toolSummary.tool_name}
-                        </span>{" "}
-                        <a
-                          href={toolDetails.pricing.trim()}
-                          target="_blank"
-                          rel="nofollow noopener noreferrer"
-                          className="text-green-600 underline hover:text-blue-800"
-                        >
-                          click here
-                        </a>
-                      </p>
-                    ) : (
-                      // 📝 Case 2: Normal pricing text
-                      <div className="space-y-3">
-                        {ensureString(toolDetails.pricing)!
-                          .split(
-                            /\.\s+(?=[A-Z])|(?:\n|\.)\s*(?=Free Plan:|Development Plan|Production Plan|Basic Plan:|Pro Plan:|Enterprise Plan|Premium Plan:|Starter Plan:|Business Plan:|Team Plan:|Individual Plan:|Monthly Plan:|Annual Plan:|Trial:|Refund Policy:)/g,
-                          )
-                          .filter((section: string) => section.trim())
-                          .map((section: string, idx: number) => {
-                            const trimmedSection = section.trim();
-
-                            const isPlanHeader =
-                              /^(Free Plan:|Development Plan|Production Plan|Basic Plan:|Pro Plan:|Enterprise Plan:|Premium Plan:|Starter Plan:|Business Plan:|Team Plan:|Individual Plan:|Monthly Plan:|Annual Plan:|Trial:|Refund Policy:)/i.test(
-                                trimmedSection,
-                              );
-
-                            return isPlanHeader ? (
-                              <div
-                                key={idx}
-                                className="border-l-4 border-green-500 pl-4 py-2 bg-green-50 rounded-r-lg"
-                              >
-                                <div className="font-semibold text-gray-800">
-                                  {trimmedSection}
-                                </div>
-                              </div>
-                            ) : (
-                              <div key={idx} className="pl-4 py-1">
-                                <div className="text-gray-700">
-                                  {trimmedSection}
-                                </div>
-                              </div>
-                            );
-                          })}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
 
             {/* FAQs */}
             {faqs.length > 0 && (
@@ -500,7 +396,7 @@ export default async function ToolDetailPage({ params }: ToolDetailPageProps) {
                           <AccordionTrigger className="text-left font-medium text-gray-800">
                             {faq.question}
                           </AccordionTrigger>
-                          <AccordionContent className="mt-2 text-gray-600 text-balance pr-0">
+                          <AccordionContent className="mt-2 text-gray-600 pr-0">
                             {faq.answer}
                           </AccordionContent>
                         </AccordionItem>
